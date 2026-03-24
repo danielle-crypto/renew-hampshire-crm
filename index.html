@@ -52,6 +52,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 .modal .history h3 { color:#b0bec5; font-size:14px; margin-bottom:8px; }
 .modal .history-item { padding:10px; background:#0f1923; border-radius:8px; margin-bottom:8px; font-size:13px; line-height:1.5; }
 .modal .history-item .date { color:#4fc3f7; font-weight:600; }
+.edit-btn { display:inline-block; margin-top:16px; padding:10px 20px; background:#4fc3f7; color:#0f1923; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; transition:all 0.2s; }
+.edit-btn:hover { background:#81d4fa; transform:translateY(-1px); }
+.edit-btn-small { display:inline-block; padding:4px 10px; background:transparent; color:#4fc3f7; border:1px solid #4fc3f7; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; text-decoration:none; transition:all 0.2s; margin-left:8px; vertical-align:middle; }
+.edit-btn-small:hover { background:#4fc3f7; color:#0f1923; }
 @media(max-width:768px) { .header { flex-direction:column; gap:16px; } .grid { grid-template-columns:1fr; } .search { width:100%; } }
 </style>
 </head>
@@ -112,7 +116,8 @@ const contacts = [
         "summary": "Lead from UpNest by Realtor.com. Bill Covert is looking to sell property at 6 Isaac Lucas Circle."
       }
     ],
-    "notes": "- UpNest seller lead\n- FOLLOW UP: Check status of listing / contact info needed"
+    "notes": "- UpNest seller lead\n- FOLLOW UP: Check status of listing / contact info needed",
+    "filename": "bill-covert.md"
   },
   {
     "name": "Hongzhu Pan",
@@ -132,7 +137,8 @@ const contacts = [
         "summary": "Lead from UpNest by Realtor.com. Hongzhu Pan is looking to sell property at 3 Brookside Dr #2."
       }
     ],
-    "notes": "- UpNest seller lead\n- FOLLOW UP: Check status of listing / reach out"
+    "notes": "- UpNest seller lead\n- FOLLOW UP: Check status of listing / reach out",
+    "filename": "hongzhu-pan.md"
   },
   {
     "name": "John B Herrick Jr",
@@ -146,7 +152,8 @@ const contacts = [
       "Retirement home (looking to sell/buy"
     ],
     "interactions": [],
-    "notes": "- Discussed Danielle's flat-fee listing model\n- Planning around retirement home \u2014 potential seller lead\n- Follow up when ready to talk specifics"
+    "notes": "- Discussed Danielle's flat-fee listing model\n- Planning around retirement home \u2014 potential seller lead\n- Follow up when ready to talk specifics",
+    "filename": "john-herrick.md"
   },
   {
     "name": "Richard Nichols",
@@ -171,7 +178,8 @@ const contacts = [
         "summary": "UpNest/Realtor.com seller lead. Richard is looking to sell property at 32 Willey Creek Rd #204."
       }
     ],
-    "notes": "- Active seller lead from UpNest\n- Also showing Paragon MLS activity \u2014 actively engaged\n- FOLLOW UP: High priority \u2014 active on multiple platforms, likely motivated seller"
+    "notes": "- Active seller lead from UpNest\n- Also showing Paragon MLS activity \u2014 actively engaged\n- FOLLOW UP: High priority \u2014 active on multiple platforms, likely motivated seller",
+    "filename": "richard-nichols.md"
   },
   {
     "name": "Samuel Mlynarski",
@@ -185,7 +193,8 @@ const contacts = [
       "Had a house under contract as of Oct 2025 (address unknown)"
     ],
     "interactions": [],
-    "notes": "- Got house under contract \u2014 no longer a rental management lead\n- Danielle offered newsletter subscription \u2014 confirm if added"
+    "notes": "- Got house under contract \u2014 no longer a rental management lead\n- Danielle offered newsletter subscription \u2014 confirm if added",
+    "filename": "samuel-mlynarski.md"
   },
   {
     "name": "Zeus Rivera",
@@ -215,7 +224,8 @@ const contacts = [
         "summary": "Thank you for reaching out, Danielle. I love this idea. Unfortunately I\u2019m still pretty early with my divorce proceedings. Down payment would pretty much wake me out and I don\u2019t know how long this is gonna take. Zeus On Mon, Mar 16, 2026 at 10:57 AM Danielle Jameson wrote: > Hi Zeus, > > I\u2019ve been th"
       }
     ],
-    "notes": "- Going through divorce \u2014 financial situation uncertain\n- Interested in buying but timing depends on divorce proceedings\n- Down payment is a concern \u2014 may need low down payment options\n- Originally looking at rentals, Danielle pivoted to purchase options\n- Budget range appears to be ~$2,500-3,000/month\n- FOLLOW UP: Check in periodically on divorce progress \u2014 could become a buyer when resolved\n- Good candidate for FHA or low down payment programs when ready"
+    "notes": "- Going through divorce \u2014 financial situation uncertain\n- Interested in buying but timing depends on divorce proceedings\n- Down payment is a concern \u2014 may need low down payment options\n- Originally looking at rentals, Danielle pivoted to purchase options\n- Budget range appears to be ~$2,500-3,000/month\n- FOLLOW UP: Check in periodically on divorce progress \u2014 could become a buyer when resolved\n- Good candidate for FHA or low down payment programs when ready",
+    "filename": "zeus-rivera.md"
   },
   {
     "name": "Travis Grace",
@@ -229,7 +239,8 @@ const contacts = [
       "5 Kossuth St, Exeter, NH"
     ],
     "interactions": [],
-    "notes": "- Active buyer client as of late 2025\n- Working with Bradley Kelly as loan officer\n- Offer on 5 Kossuth St went through multiple addendums"
+    "notes": "- Active buyer client as of late 2025\n- Working with Bradley Kelly as loan officer\n- Offer on 5 Kossuth St went through multiple addendums",
+    "filename": "travis-grace.md"
   },
   {
     "name": "C Vick",
@@ -249,7 +260,8 @@ const contacts = [
         "summary": "Response to Danielle's Halloween/seasonal newsletter email."
       }
     ],
-    "notes": "- Responded to marketing email \u2014 engaged contact\n- First name initial only \u2014 may need to find full name"
+    "notes": "- Responded to marketing email \u2014 engaged contact\n- First name initial only \u2014 may need to find full name",
+    "filename": "c-vick.md"
   },
   {
     "name": "Eric Gittings (and Corinne Gittings)",
@@ -279,7 +291,8 @@ const contacts = [
         "summary": "Hi Danielle, That is a very attractive savings for a homeowner looking to sell! Hope all is well with you! Regards, Eric and Corinne Gittings 127 Depot Road East Kingston, NH 03827 617-513-5233 ericg750@comcast.net mailto:ericg750@comcast.net > On 03/10/2026 5:59 PM EDT Danielle Jameson wrote: > > >"
       }
     ],
-    "notes": "- Married to Corinne Gittings\n- Responded to marketing email \u2014 potential future seller\n- Located in East Kingston, NH \u2014 southern NH market\n- Engaged and responsive to emails \u2014 good sign for future outreach"
+    "notes": "- Married to Corinne Gittings\n- Responded to marketing email \u2014 potential future seller\n- Located in East Kingston, NH \u2014 southern NH market\n- Engaged and responsive to emails \u2014 good sign for future outreach",
+    "filename": "eric-gittings.md"
   },
   {
     "name": "Judy Osgood",
@@ -310,7 +323,8 @@ const contacts = [
         "summary": "Email thread about sales comps and a property management proposal."
       }
     ],
-    "notes": "- Multiple email threads \u2014 active property management relationship\n- Appears to be a property owner Danielle manages for\n- Has received owner statements, rent confirmations, and management proposals\n- IMPORTANT: Active PM client \u2014 maintain regular communication"
+    "notes": "- Multiple email threads \u2014 active property management relationship\n- Appears to be a property owner Danielle manages for\n- Has received owner statements, rent confirmations, and management proposals\n- IMPORTANT: Active PM client \u2014 maintain regular communication",
+    "filename": "judy-osgood.md"
   },
   {
     "name": "Pamela Barber",
@@ -330,7 +344,8 @@ const contacts = [
         "summary": "Email thread about property showings. Forwarded from old KW account."
       }
     ],
-    "notes": "- Contact from Keller Williams era\n- Had showing activity \u2014 potential buyer or seller"
+    "notes": "- Contact from Keller Williams era\n- Had showing activity \u2014 potential buyer or seller",
+    "filename": "pamela-barber.md"
   },
   {
     "name": "Shawn",
@@ -350,7 +365,8 @@ const contacts = [
         "summary": "Email thread regarding Ford's Landing Unit 51. Also involved Diane Paradie from PMI Green Rock."
       }
     ],
-    "notes": "- Connected to Ford's Landing Unit 51\n- Diane Paradie (diane@pmigreenrock.com) from PMI Green Rock also involved \u2014 may be property manager"
+    "notes": "- Connected to Ford's Landing Unit 51\n- Diane Paradie (diane@pmigreenrock.com) from PMI Green Rock also involved \u2014 may be property manager",
+    "filename": "shawn-fords-landing.md"
   },
   {
     "name": "Bradley Kelly",
@@ -362,7 +378,8 @@ const contacts = [
     "added": "2026-03-24",
     "properties": [],
     "interactions": [],
-    "notes": "- Loan officer \u2014 partner for buyer financing\n- Worked on Travis Grace deal"
+    "notes": "- Loan officer \u2014 partner for buyer financing\n- Worked on Travis Grace deal",
+    "filename": "bradley-kelly.md"
   },
   {
     "name": "Danielle Jameson",
@@ -470,7 +487,8 @@ const contacts = [
         "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Scott Large Date: Mon, Sep 22, 2025 at 9:32 AM Subject: Re: Exciting News! To: Daniell"
       }
     ],
-    "notes": "- Auto-created by CRM email scanner"
+    "notes": "- Auto-created by CRM email scanner",
+    "filename": "danielle-jameson.md"
   },
   {
     "name": "Diane Paradie",
@@ -490,7 +508,8 @@ const contacts = [
         "summary": "Part of email thread regarding Ford's Landing Unit 51 with Shawn."
       }
     ],
-    "notes": "- Works at PMI Green Rock \u2014 property management company\n- Professional contact / vendor relationship"
+    "notes": "- Works at PMI Green Rock \u2014 property management company\n- Professional contact / vendor relationship",
+    "filename": "diane-paradie.md"
   },
   {
     "name": "Robert Erickson",
@@ -502,7 +521,8 @@ const contacts = [
     "added": "2026-03-24",
     "properties": [],
     "interactions": [],
-    "notes": "- Connected to Judy Osgood's property management\n- Turbo Tenant platform related"
+    "notes": "- Connected to Judy Osgood's property management\n- Turbo Tenant platform related",
+    "filename": "robert-erickson.md"
   },
   {
     "name": "Scott Large",
@@ -514,7 +534,8 @@ const contacts = [
     "added": "2026-03-24",
     "properties": [],
     "interactions": [],
-    "notes": "- Likely inspector or service provider (scheduling context around inspection period)\n- Has schedulable phone line"
+    "notes": "- Likely inspector or service provider (scheduling context around inspection period)\n- Has schedulable phone line",
+    "filename": "scott-large.md"
   },
   {
     "name": "Sofia Ragonese",
@@ -535,7 +556,8 @@ const contacts = [
         "summary": "Offer submission thread involving Sofia Ragonese (likely listing or buyer's agent)."
       }
     ],
-    "notes": "- Works at RPR NH (rprnh.com) \u2014 likely another real estate agent/brokerage\n- Professional contact \u2014 agent-to-agent relationship"
+    "notes": "- Works at RPR NH (rprnh.com) \u2014 likely another real estate agent/brokerage\n- Professional contact \u2014 agent-to-agent relationship",
+    "filename": "sofia-ragonese.md"
   }
 ];
 
@@ -585,8 +607,9 @@ function renderContacts() {
     const props = (c.properties||[]).filter(p => p && p !== '(none identified yet)');
     const followUp = (c.notes||'').match(/FOLLOW UP:([^\n]*)/);
     
+    const editUrl = c.filename ? `https://github.com/danielle-crypto/renew-hampshire-crm/edit/main/contacts/${c.filename}` : '#';
     return `<div class="card" onclick="showContact(${contacts.indexOf(c)})">
-      <div class="name">${c.name}</div>
+      <div class="name">${c.name} ${c.filename ? `<a class="edit-btn-small" href="${editUrl}" target="_blank" onclick="event.stopPropagation()">✏️ Edit</a>` : ''}</div>
       <span class="category ${catClass}">${c.category||'Uncategorized'}</span>
       <div class="info">
         ${c.email && c.email !== '—' ? `<div>📧 <strong>${c.email}</strong></div>` : ''}
@@ -635,6 +658,7 @@ function showContact(idx) {
       `).join('')}
     </div>
     ${c.notes ? `<div style="margin-top:16px;padding:12px;background:#0f1923;border-radius:8px;font-size:13px;color:#90a4ae">${c.notes.replace(/\n/g,'<br>')}</div>` : ''}
+    ${c.filename ? `<a class="edit-btn" href="https://github.com/danielle-crypto/renew-hampshire-crm/edit/main/contacts/${c.filename}" target="_blank">✏️ Edit Contact on GitHub</a>` : ''}
   `;
   modal.classList.add('show');
 }
