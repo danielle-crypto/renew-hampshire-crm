@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renew Hampshire CRM</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#0f1923; color:#e0e0e0; }
+.header { background:linear-gradient(135deg,#1a2332,#243447); padding:24px 32px; border-bottom:1px solid #2a3a4a; display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size:24px; color:#4fc3f7; }
+.header .subtitle { color:#78909c; font-size:14px; }
+.header .stats { display:flex; gap:24px; }
+.stat { text-align:center; }
+.stat .num { font-size:28px; font-weight:700; color:#4fc3f7; }
+.stat .label { font-size:11px; color:#78909c; text-transform:uppercase; letter-spacing:1px; }
+.filters { padding:16px 32px; background:#1a2332; border-bottom:1px solid #2a3a4a; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.filter-btn { padding:6px 16px; border-radius:20px; border:1px solid #2a3a4a; background:transparent; color:#90a4ae; cursor:pointer; font-size:13px; transition:all 0.2s; }
+.filter-btn:hover, .filter-btn.active { background:#4fc3f7; color:#0f1923; border-color:#4fc3f7; }
+.search { padding:8px 16px; border-radius:20px; border:1px solid #2a3a4a; background:#0f1923; color:#e0e0e0; font-size:14px; width:250px; outline:none; }
+.search:focus { border-color:#4fc3f7; }
+.container { padding:24px 32px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; }
+.card { background:#1a2332; border-radius:12px; border:1px solid #2a3a4a; padding:20px; transition:all 0.2s; cursor:pointer; }
+.card:hover { border-color:#4fc3f7; transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+.card .name { font-size:18px; font-weight:600; color:#fff; margin-bottom:4px; }
+.card .category { display:inline-block; padding:2px 10px; border-radius:12px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; }
+.cat-seller { background:#e91e6320; color:#f48fb1; border:1px solid #e91e6340; }
+.cat-buyer { background:#4caf5020; color:#81c784; border:1px solid #4caf5040; }
+.cat-client { background:#ff980020; color:#ffb74d; border:1px solid #ff980040; }
+.cat-vendor { background:#9c27b020; color:#ce93d8; border:1px solid #9c27b040; }
+.cat-agent { background:#2196f320; color:#64b5f6; border:1px solid #2196f340; }
+.cat-lead { background:#f4433620; color:#ef9a9a; border:1px solid #f4433640; }
+.cat-past { background:#60738020; color:#90a4ae; border:1px solid #60738040; }
+.cat-pm { background:#ff980020; color:#ffb74d; border:1px solid #ff980040; }
+.cat-default { background:#60738020; color:#90a4ae; border:1px solid #60738040; }
+.card .info { font-size:13px; color:#90a4ae; line-height:1.6; }
+.card .info strong { color:#b0bec5; }
+.card .property { margin-top:8px; padding:8px 12px; background:#0f192320; border-radius:8px; border-left:3px solid #4fc3f7; font-size:13px; color:#b0bec5; }
+.card .notes { margin-top:10px; font-size:12px; color:#78909c; font-style:italic; border-top:1px solid #2a3a4a; padding-top:8px; }
+.card .follow-up { margin-top:8px; padding:6px 12px; background:#f4433615; border-radius:6px; border-left:3px solid #f44336; font-size:12px; color:#ef9a9a; }
+.modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100; justify-content:center; align-items:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:#1a2332; border-radius:16px; border:1px solid #2a3a4a; padding:32px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; }
+.modal h2 { color:#4fc3f7; margin-bottom:16px; }
+.modal .close { float:right; background:none; border:none; color:#78909c; font-size:24px; cursor:pointer; }
+.modal .close:hover { color:#fff; }
+.modal .field { margin-bottom:12px; }
+.modal .field label { font-size:12px; color:#78909c; text-transform:uppercase; letter-spacing:1px; }
+.modal .field .value { font-size:15px; color:#e0e0e0; margin-top:2px; }
+.modal .history { margin-top:16px; }
+.modal .history h3 { color:#b0bec5; font-size:14px; margin-bottom:8px; }
+.modal .history-item { padding:10px; background:#0f1923; border-radius:8px; margin-bottom:8px; font-size:13px; line-height:1.5; }
+.modal .history-item .date { color:#4fc3f7; font-weight:600; }
+@media(max-width:768px) { .header { flex-direction:column; gap:16px; } .grid { grid-template-columns:1fr; } .search { width:100%; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🏠 Renew Hampshire CRM</h1>
+    <div class="subtitle">Danielle Jameson — Real Estate Contact Manager</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="num" id="totalContacts">0</div><div class="label">Contacts</div></div>
+    <div class="stat"><div class="num" id="activeLeads">0</div><div class="label">Active Leads</div></div>
+    <div class="stat"><div class="num" id="followUps">0</div><div class="label">Follow Ups</div></div>
+  </div>
+</div>
+
+<div class="filters">
+  <input type="text" class="search" id="search" placeholder="🔍 Search contacts...">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="seller">Sellers</button>
+  <button class="filter-btn" data-filter="buyer">Buyers</button>
+  <button class="filter-btn" data-filter="client">Clients</button>
+  <button class="filter-btn" data-filter="lead">Leads</button>
+  <button class="filter-btn" data-filter="vendor">Vendors</button>
+  <button class="filter-btn" data-filter="agent">Agents</button>
+  <button class="filter-btn" data-filter="past">Past Clients</button>
+</div>
+
+<div class="container">
+  <div class="grid" id="contactGrid"></div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const contacts = [
+  {
+    "name": "Bill Covert",
+    "email": "\u2014",
+    "phone": "\u2014",
+    "address": "6 Isaac Lucas Circle",
+    "category": "Seller Lead",
+    "source": "UpNest/Realtor.com lead, forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "6 Isaac Lucas Circle"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Lead claimed: Seller",
+        "summary": "Lead from UpNest by Realtor.com. Bill Covert is looking to sell property at 6 Isaac Lucas Circle."
+      }
+    ],
+    "notes": "- UpNest seller lead\n- FOLLOW UP: Check status of listing / contact info needed"
+  },
+  {
+    "name": "Hongzhu Pan",
+    "email": "\u2014",
+    "phone": "\u2014",
+    "address": "3 Brookside Dr #2",
+    "category": "Seller Lead",
+    "source": "UpNest/Realtor.com lead, forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "3 Brookside Dr #2"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Lead claimed: Seller",
+        "summary": "Lead from UpNest by Realtor.com. Hongzhu Pan is looking to sell property at 3 Brookside Dr #2."
+      }
+    ],
+    "notes": "- UpNest seller lead\n- FOLLOW UP: Check status of listing / reach out"
+  },
+  {
+    "name": "John B Herrick Jr",
+    "email": "(not yet captured)",
+    "phone": "(not yet captured)",
+    "address": "\u2014",
+    "category": "Potential Seller / Lead",
+    "source": "Email (forwarded thread from Danielle)",
+    "added": "2026-03-24",
+    "properties": [
+      "Retirement home (looking to sell/buy"
+    ],
+    "interactions": [],
+    "notes": "- Discussed Danielle's flat-fee listing model\n- Planning around retirement home \u2014 potential seller lead\n- Follow up when ready to talk specifics"
+  },
+  {
+    "name": "Richard Nichols",
+    "email": "\u2014",
+    "phone": "\u2014",
+    "address": "32 Willey Creek Rd #204",
+    "category": "Seller Lead",
+    "source": "UpNest/Realtor.com lead + Paragon MLS activity",
+    "added": "2026-03-23",
+    "properties": [
+      "32 Willey Creek Rd #204"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03-19",
+        "subject": "Paragon Collaboration Center activity",
+        "summary": "Richard showed activity on Danielle's Collaboration Center site related to Willey Creek property."
+      },
+      {
+        "date": "2026-03",
+        "subject": "Lead claimed: Seller at 32 Willey Creek Rd #204",
+        "summary": "UpNest/Realtor.com seller lead. Richard is looking to sell property at 32 Willey Creek Rd #204."
+      }
+    ],
+    "notes": "- Active seller lead from UpNest\n- Also showing Paragon MLS activity \u2014 actively engaged\n- FOLLOW UP: High priority \u2014 active on multiple platforms, likely motivated seller"
+  },
+  {
+    "name": "Samuel Mlynarski",
+    "email": "(not yet captured)",
+    "phone": "(not yet captured)",
+    "address": "\u2014",
+    "category": "Past Lead / Newsletter Candidate",
+    "source": "Email (forwarded thread from Danielle)",
+    "added": "2026-03-24",
+    "properties": [
+      "Had a house under contract as of Oct 2025 (address unknown)"
+    ],
+    "interactions": [],
+    "notes": "- Got house under contract \u2014 no longer a rental management lead\n- Danielle offered newsletter subscription \u2014 confirm if added"
+  },
+  {
+    "name": "Zeus Rivera",
+    "email": "zeus.rivera@gmail.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Active Lead / Potential Buyer",
+    "source": "Direct conversation",
+    "added": "2026-03-23",
+    "properties": [
+      "Looking for housing (rental or purchase) in southern NH area"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03-16",
+        "subject": "Homeownership options discussion",
+        "summary": "Danielle reached out to Zeus proactively with homeownership alternatives to renting. She ran numbers on specific options:\n- Option 1: ~$2,530\u2013$2,900/month (includes condo fee)\n- Option 2: ~$2,470\u2013$2,970/month (no condo fee)\n\nZeus responded positively (\"I love this idea\") but explained he's early in "
+      },
+      {
+        "date": "2026-03-16",
+        "subject": "Re: Thoughts on other options.",
+        "summary": "Thank you for reaching out, Danielle. I love this idea. Unfortunately I\u2019m still pretty early with my divorce proceedings. Down payment would pretty much wake me out and I don\u2019t know how long this is gonna take. Zeus On Mon, Mar 16, 2026 at 10:57 AM Danielle Jameson wrote: > Hi Zeus, > > I\u2019ve been th"
+      },
+      {
+        "date": "2026-03-16",
+        "subject": "Re: Thoughts on other options.",
+        "summary": "Thank you for reaching out, Danielle. I love this idea. Unfortunately I\u2019m still pretty early with my divorce proceedings. Down payment would pretty much wake me out and I don\u2019t know how long this is gonna take. Zeus On Mon, Mar 16, 2026 at 10:57 AM Danielle Jameson wrote: > Hi Zeus, > > I\u2019ve been th"
+      }
+    ],
+    "notes": "- Going through divorce \u2014 financial situation uncertain\n- Interested in buying but timing depends on divorce proceedings\n- Down payment is a concern \u2014 may need low down payment options\n- Originally looking at rentals, Danielle pivoted to purchase options\n- Budget range appears to be ~$2,500-3,000/month\n- FOLLOW UP: Check in periodically on divorce progress \u2014 could become a buyer when resolved\n- Good candidate for FHA or low down payment programs when ready"
+  },
+  {
+    "name": "Travis Grace",
+    "email": "(not yet captured)",
+    "phone": "(not yet captured)",
+    "address": "\u2014",
+    "category": "Buyer Client",
+    "source": "Email (forwarded threads from Danielle)",
+    "added": "2026-03-24",
+    "properties": [
+      "5 Kossuth St, Exeter, NH"
+    ],
+    "interactions": [],
+    "notes": "- Active buyer client as of late 2025\n- Working with Bradley Kelly as loan officer\n- Offer on 5 Kossuth St went through multiple addendums"
+  },
+  {
+    "name": "C Vick",
+    "email": "cv.go43@gmail.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Past Client / Newsletter Subscriber",
+    "source": "Forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "(none identified)"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Is your house haunted? (newsletter response)",
+        "summary": "Response to Danielle's Halloween/seasonal newsletter email."
+      }
+    ],
+    "notes": "- Responded to marketing email \u2014 engaged contact\n- First name initial only \u2014 may need to find full name"
+  },
+  {
+    "name": "Eric Gittings (and Corinne Gittings)",
+    "email": "ericg750@comcast.net",
+    "phone": "617-513-5233",
+    "address": "127 Depot Road, East Kingston, NH 03827",
+    "category": "Past Client",
+    "source": "Email list / newsletter subscriber",
+    "added": "2026-03-23",
+    "properties": [
+      "127 Depot Road, East Kingston, NH 03827 (residence)"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03-11",
+        "subject": "Response to seller equity announcement",
+        "summary": "Eric responded positively to Danielle's email about the $4,999 flat fee listing model (Renew Hampshire / formerly Jameson Realty). He called it \"a very attractive savings for a homeowner looking to sell\" and wished Danielle well. Friendly, warm tone \u2014 seems like a good relationship."
+      },
+      {
+        "date": "2026-03-11",
+        "subject": "Re: \ud83d\udce3 A quick announcement (and how sellers can keep more equity)",
+        "summary": "Hi Danielle, That is a very attractive savings for a homeowner looking to sell! Hope all is well with you! Regards, Eric and Corinne Gittings 127 Depot Road East Kingston, NH 03827 617-513-5233 ericg750@comcast.net mailto:ericg750@comcast.net > On 03/10/2026 5:59 PM EDT Danielle Jameson wrote: > > >"
+      },
+      {
+        "date": "2026-03-11",
+        "subject": "Re: \ud83d\udce3 A quick announcement (and how sellers can keep more equity)",
+        "summary": "Hi Danielle, That is a very attractive savings for a homeowner looking to sell! Hope all is well with you! Regards, Eric and Corinne Gittings 127 Depot Road East Kingston, NH 03827 617-513-5233 ericg750@comcast.net mailto:ericg750@comcast.net > On 03/10/2026 5:59 PM EDT Danielle Jameson wrote: > > >"
+      }
+    ],
+    "notes": "- Married to Corinne Gittings\n- Responded to marketing email \u2014 potential future seller\n- Located in East Kingston, NH \u2014 southern NH market\n- Engaged and responsive to emails \u2014 good sign for future outreach"
+  },
+  {
+    "name": "Judy Osgood",
+    "email": "pitudy625@yahoo.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Client / Property Management",
+    "source": "Forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "64 Kelwyn (owner statement)",
+      "Property with security deposit / rent collection"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Security Deposit and December rent received",
+        "summary": "Email confirming security deposit and December rent received."
+      },
+      {
+        "date": "2026-03",
+        "subject": "64 Kelwyn Owner Statement",
+        "summary": "Owner statement related to 64 Kelwyn property."
+      },
+      {
+        "date": "2026-03",
+        "subject": "Sales Comps and property management proposal",
+        "summary": "Email thread about sales comps and a property management proposal."
+      }
+    ],
+    "notes": "- Multiple email threads \u2014 active property management relationship\n- Appears to be a property owner Danielle manages for\n- Has received owner statements, rent confirmations, and management proposals\n- IMPORTANT: Active PM client \u2014 maintain regular communication"
+  },
+  {
+    "name": "Pamela Barber",
+    "email": "pfrenchbarber@yahoo.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Client / Showing Contact",
+    "source": "Forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "(Property from showings email"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Showings",
+        "summary": "Email thread about property showings. Forwarded from old KW account."
+      }
+    ],
+    "notes": "- Contact from Keller Williams era\n- Had showing activity \u2014 potential buyer or seller"
+  },
+  {
+    "name": "Shawn",
+    "email": "shawngeo@gmail.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Client / Property Management",
+    "source": "Forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "Ford's Landing Unit 51"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Ford's Landing Unit 51",
+        "summary": "Email thread regarding Ford's Landing Unit 51. Also involved Diane Paradie from PMI Green Rock."
+      }
+    ],
+    "notes": "- Connected to Ford's Landing Unit 51\n- Diane Paradie (diane@pmigreenrock.com) from PMI Green Rock also involved \u2014 may be property manager"
+  },
+  {
+    "name": "Bradley Kelly",
+    "email": "(not yet captured)",
+    "phone": "(not yet captured)",
+    "address": "\u2014",
+    "category": "Vendor / Loan Officer",
+    "source": "Email (forwarded thread from Danielle)",
+    "added": "2026-03-24",
+    "properties": [],
+    "interactions": [],
+    "notes": "- Loan officer \u2014 partner for buyer financing\n- Worked on Travis Grace deal"
+  },
+  {
+    "name": "Danielle Jameson",
+    "email": "email@paragonmessaging.com",
+    "phone": "603-988-3140",
+    "address": "16 Little River Road Unit 1 Exeter, NH 03833",
+    "category": "Uncategorized",
+    "source": "Email",
+    "added": "2026-03-24",
+    "properties": [],
+    "interactions": [
+      {
+        "date": "2026-03-19",
+        "subject": "RICHARD NICHOLS ( Willey Creek) Activity notification for your",
+        "summary": "Collaboration Center Site\n* { -webkit-text-size-adjust: none; -ms-text-size-adjust: none } #outlook a { padding: 0 } .ReadMsgBody, .ExternalClass { width: 100%; background-color: #e1f0f4 } .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div, .ExternalClass a, .ExternalCla"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Showings",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Pamela Barber Date: Sat, Mar 21, 2026 at 2:20 PM Subject: Re: Showings To: Danielle Ja"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: New Service / Pricing Model",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Fri, Mar 13, 2026 at 10:33 AM Subject: Re: New Service / Pricin"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Ford's Kanding Unit 51",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Tue, Feb 24, 2026 at 10:29 AM Subject: Re: Ford's Kanding Unit "
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Lead claimed: Seller Bill Covert at 6 Isaac Lucas Cir",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: UpNest by Realtor.com Date: Thu, Feb 26, 2026 at 4:24 PM Subject: Lead claimed: Seller"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: 3 Brookside Dr # 2",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Sat, Mar 7, 2026 at 3:43 PM Subject: Re: 3 Brookside Dr # 2 To:"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Lead claimed: Seller Hongzhu Pan at 3 Brookside Dr #2",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: UpNest by Realtor.com Date: Thu, Feb 12, 2026 at 6:00 PM Subject: Lead claimed: Seller"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Turbo Tenant",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Thu, Jan 22, 2026 at 6:08 PM Subject: Re: Turbo Tenant To: Robe"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Lead claimed: Seller Richard Nichols at 32 Willey Creek Rd #204",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: UpNest by Realtor.com Date: Sat, Jan 17, 2026 at 2:34 PM Subject: Lead claimed: Seller"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: 64 Kelwyn Owner Statement",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Tue, Jan 6, 2026 at 5:34 PM Subject: Re: 64 Kelwyn Owner Statem"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Security Deposit and December rent received",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Judy Osgood Date: Thu, Dec 11, 2025 at 2:31 PM Subject: Re: Security Deposit and Decem"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Security Deposit and December rent received",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Mon, Mar 23, 2026 at 5:12 PM Subject: Fwd: Security Deposit and"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Offer Submission for 5 Kossuth St Exeter, NH",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Sofia Ragonese Date: Mon, Dec 1, 2025 at 7:39 PM Subject: Re: Offer Submission for 5 K"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: \ud83d\udc7b Is your house haunted?",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: C Vick Date: Tue, Oct 28, 2025 at 12:16 PM Subject: Re: \ud83d\udc7b Is your house haunted? To: D"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Renting your home",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Wed, Oct 22, 2025 at 12:37 PM Subject: Re: Renting your home To"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Sales Comps and property management proposal",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Judy Osgood Date: Sat, Oct 11, 2025 at 11:28 PM Subject: Re: Sales Comps and property "
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Can you help me with some numbers please? \u00a0\ud83d\ude4f\ud83c\udffc",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Bradley Kelly Date: Tue, Oct 7, 2025 at 4:57 PM Subject: RE: Can you help me with some"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Action Needed - Please sign your inspection agreement",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Danielle Jameson Date: Thu, Sep 25, 2025 at 3:15 PM Subject: Fwd: Action Needed - Plea"
+      },
+      {
+        "date": "2026-03-23",
+        "subject": "Fwd: Exciting News!",
+        "summary": "Danielle Jameson Realtor\u00ae reNewHampshire.com *See how my flat-fee listing compares to a traditional listing model * *Real Estate of NH | Keller Williams Coastal Realty* ---------- Forwarded message --------- From: Scott Large Date: Mon, Sep 22, 2025 at 9:32 AM Subject: Re: Exciting News! To: Daniell"
+      }
+    ],
+    "notes": "- Auto-created by CRM email scanner"
+  },
+  {
+    "name": "Diane Paradie",
+    "email": "diane@pmigreenrock.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Vendor / Property Manager",
+    "source": "Forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "Ford's Landing Unit 51 (involved in thread)"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Ford's Landing Unit 51",
+        "summary": "Part of email thread regarding Ford's Landing Unit 51 with Shawn."
+      }
+    ],
+    "notes": "- Works at PMI Green Rock \u2014 property management company\n- Professional contact / vendor relationship"
+  },
+  {
+    "name": "Robert Erickson",
+    "email": "(not yet captured)",
+    "phone": "(not yet captured)",
+    "address": "\u2014",
+    "category": "Vendor / Property Management",
+    "source": "Email (forwarded thread from Danielle)",
+    "added": "2026-03-24",
+    "properties": [],
+    "interactions": [],
+    "notes": "- Connected to Judy Osgood's property management\n- Turbo Tenant platform related"
+  },
+  {
+    "name": "Scott Large",
+    "email": "(not yet captured)",
+    "phone": "(not yet captured - has a business number per email)",
+    "address": "\u2014",
+    "category": "Vendor / Service Provider",
+    "source": "Email (forwarded thread from Danielle)",
+    "added": "2026-03-24",
+    "properties": [],
+    "interactions": [],
+    "notes": "- Likely inspector or service provider (scheduling context around inspection period)\n- Has schedulable phone line"
+  },
+  {
+    "name": "Sofia Ragonese",
+    "email": "sofia@rprnh.com",
+    "phone": "\u2014",
+    "address": "\u2014",
+    "category": "Other Agent",
+    "source": "Forwarded from djameson@kw.com",
+    "added": "2026-03-23",
+    "properties": [
+      "5 Kossuth St, Exeter, NH",
+      "110 Brewery Lane"
+    ],
+    "interactions": [
+      {
+        "date": "2026-03",
+        "subject": "Offer Submission for 5 Kossuth St Exeter, NH",
+        "summary": "Offer submission thread involving Sofia Ragonese (likely listing or buyer's agent)."
+      }
+    ],
+    "notes": "- Works at RPR NH (rprnh.com) \u2014 likely another real estate agent/brokerage\n- Professional contact \u2014 agent-to-agent relationship"
+  }
+];
+
+function getCategoryClass(cat) {
+  const c = (cat||'').toLowerCase();
+  if (c.includes('seller')) return 'cat-seller';
+  if (c.includes('buyer')) return 'cat-buyer';
+  if (c.includes('active lead')) return 'cat-lead';
+  if (c.includes('lead')) return 'cat-lead';
+  if (c.includes('vendor') || c.includes('property manage')) return 'cat-vendor';
+  if (c.includes('agent')) return 'cat-agent';
+  if (c.includes('past')) return 'cat-past';
+  if (c.includes('client')) return 'cat-client';
+  return 'cat-default';
+}
+
+function getFilterMatch(cat, filter) {
+  if (filter === 'all') return true;
+  const c = (cat||'').toLowerCase();
+  if (filter === 'seller') return c.includes('seller');
+  if (filter === 'buyer') return c.includes('buyer');
+  if (filter === 'client') return c.includes('client') || c.includes('property manage');
+  if (filter === 'lead') return c.includes('lead');
+  if (filter === 'vendor') return c.includes('vendor') || c.includes('property manager');
+  if (filter === 'agent') return c.includes('agent');
+  if (filter === 'past') return c.includes('past');
+  return true;
+}
+
+let currentFilter = 'all';
+let searchTerm = '';
+
+function renderContacts() {
+  const grid = document.getElementById('contactGrid');
+  const filtered = contacts.filter(c => {
+    const matchFilter = getFilterMatch(c.category, currentFilter);
+    const matchSearch = !searchTerm || 
+      c.name.toLowerCase().includes(searchTerm) ||
+      (c.email||'').toLowerCase().includes(searchTerm) ||
+      (c.properties||[]).join(' ').toLowerCase().includes(searchTerm) ||
+      (c.notes||'').toLowerCase().includes(searchTerm);
+    return matchFilter && matchSearch;
+  });
+
+  grid.innerHTML = filtered.map((c, i) => {
+    const catClass = getCategoryClass(c.category);
+    const props = (c.properties||[]).filter(p => p && p !== '(none identified yet)');
+    const followUp = (c.notes||'').match(/FOLLOW UP:([^\n]*)/);
+    
+    return `<div class="card" onclick="showContact(${contacts.indexOf(c)})">
+      <div class="name">${c.name}</div>
+      <span class="category ${catClass}">${c.category||'Uncategorized'}</span>
+      <div class="info">
+        ${c.email && c.email !== '—' ? `<div>📧 <strong>${c.email}</strong></div>` : ''}
+        ${c.phone && c.phone !== '—' ? `<div>📱 ${c.phone}</div>` : ''}
+        ${c.address && c.address !== '—' ? `<div>📍 ${c.address}</div>` : ''}
+      </div>
+      ${props.length ? `<div class="property">🏠 ${props.join(', ')}</div>` : ''}
+      ${followUp ? `<div class="follow-up">⚡ ${followUp[1].trim()}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  // Update stats
+  document.getElementById('totalContacts').textContent = contacts.length;
+  document.getElementById('activeLeads').textContent = contacts.filter(c => 
+    (c.category||'').toLowerCase().includes('lead') || 
+    (c.category||'').toLowerCase().includes('active')
+  ).length;
+  document.getElementById('followUps').textContent = contacts.filter(c => 
+    (c.notes||'').includes('FOLLOW UP')
+  ).length;
+}
+
+function showContact(idx) {
+  const c = contacts[idx];
+  const modal = document.getElementById('modal');
+  const content = document.getElementById('modalContent');
+  const catClass = getCategoryClass(c.category);
+  
+  content.innerHTML = `
+    <h2>${c.name}</h2>
+    <span class="category ${catClass}">${c.category||'Uncategorized'}</span>
+    <div style="margin-top:16px">
+      <div class="field"><label>Email</label><div class="value">${c.email||'—'}</div></div>
+      <div class="field"><label>Phone</label><div class="value">${c.phone||'—'}</div></div>
+      <div class="field"><label>Address</label><div class="value">${c.address||'—'}</div></div>
+      <div class="field"><label>Source</label><div class="value">${c.source||'—'}</div></div>
+      <div class="field"><label>Properties</label><div class="value">${(c.properties||[]).join('<br>')||'None identified'}</div></div>
+    </div>
+    <div class="history">
+      <h3>Interaction History</h3>
+      ${(c.interactions||[]).map(h => `
+        <div class="history-item">
+          <span class="date">${h.date}</span> — ${h.subject}<br>
+          <span style="color:#78909c">${h.summary}</span>
+        </div>
+      `).join('')}
+    </div>
+    ${c.notes ? `<div style="margin-top:16px;padding:12px;background:#0f1923;border-radius:8px;font-size:13px;color:#90a4ae">${c.notes.replace(/\n/g,'<br>')}</div>` : ''}
+  `;
+  modal.classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    renderContacts();
+  });
+});
+
+document.getElementById('search').addEventListener('input', function() {
+  searchTerm = this.value.toLowerCase();
+  renderContacts();
+});
+
+renderContacts();
+</script>
+</body>
+</html>
